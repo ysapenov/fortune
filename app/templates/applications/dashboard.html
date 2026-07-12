@@ -1,52 +1,41 @@
 {% extends "base.html" %}
 
-{% block title %}Application Dashboard - Job Hunt Helper{% endblock %}
+{% block title %}Applications - Job Hunt Helper{% endblock %}
 
 {% block content %}
 <div class="row mb-4">
     <div class="col-12">
-        <h2 class="display-5 fw-bold">Application Dashboard</h2>
-        <p class="lead">Track your job search progress, success rates, and application timelines.</p>
+        <h1><i class="bi bi-send me-2"></i>Applications</h1>
+        <p class="text-muted">Track your job search progress, success rates, and application timelines.</p>
     </div>
 </div>
 
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Total Applications</h5>
-                <p class="card-text display-4" id="metric-total">0</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-9">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Timeline of Submissions</h5>
-                <canvas id="timelineChart" style="max-height: 200px;"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mb-5">
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title text-center">Status Distribution</h5>
-                <div style="position: relative; height:300px; width:100%">
-                    <canvas id="statusChart"></canvas>
+<div style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 1rem; width: 100%;" class="mb-5">
+    <div class="card h-100 w-100">
+        <div class="card-body">
+            <h5 class="card-title text-center">Status Distribution</h5>
+            <div style="position: relative; height:300px; width:100%">
+                <canvas id="statusChart"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; text-align: center;">
+                    <div class="text-muted small">Total</div>
+                    <div class="fs-1 fw-bold text-white" id="metric-total">0</div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title text-center">Success Rate by Company</h5>
-                <div style="position: relative; height:300px; width:100%">
-                    <canvas id="successChart"></canvas>
-                </div>
+    <div class="card h-100 w-100">
+        <div class="card-body">
+            <h5 class="card-title text-center">Timeline of Submissions</h5>
+            <div style="position: relative; height:300px; width:100%">
+                <canvas id="timelineChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="card h-100 w-100">
+        <div class="card-body">
+            <h5 class="card-title text-center">Success Rate by Company</h5>
+            <div style="position: relative; height:300px; width:100%">
+                <canvas id="successChart"></canvas>
             </div>
         </div>
     </div>

@@ -13,26 +13,28 @@
   - `database.py` — SQLite/SQLAlchemy setup
   - `models/` — SQLAlchemy models
   - `routers/` — API route handlers
+    - `applications.py` — Application management endpoints
+    - `frontend.py` — Web UI route handlers
+    - `interviews.py` — Interview prep endpoints
     - `jobs.py` — Job scraping/search endpoints
     - `resumes.py` — Resume upload/optimization endpoints
-    - `applications.py` — Application management endpoints
-    - `interviews.py` — Interview prep endpoints
   - `services/` — Business logic
-    - `scraper.py` — Job scraping service
-    - `resume_parser.py` — PDF/DOCX resume parsing
-    - `resume_optimizer.py` — ATS keyword optimization
     - `application_manager.py` — Application pre-fill and tracking
     - `interview_prep.py` — Interview material generation
     - `keyword_matcher.py` — Keyword extraction and matching
     - `llm_client.py` — LLM-agnostic client (supporting Gemini initially, extensible to others)
+    - `pdf_export.py` — PDF generation for export
+    - `resume_generator.py` — Resume generation logic
+    - `resume_optimizer.py` — ATS keyword optimization
+    - `resume_parser.py` — PDF/DOCX resume parsing
+    - `scraper.py` — Job scraping service
   - `templates/` — Jinja2 HTML templates
   - `static/` — CSS/JS assets
 - `tests/` — pytest test suite
-  - `test_scraper.py`
-  - `test_resume_parser.py`
-  - `test_keyword_matcher.py`
-  - `test_integration.py`
   - `conftest.py`
+  - `test_integration.py`
+  - `test_resume.py`
+  - `test_scraper.py`
 - `run.py` — Entry point script
 - `requirements.txt` — Dependencies
 - `README.md` — Project documentation

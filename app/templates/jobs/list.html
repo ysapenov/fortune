@@ -9,7 +9,7 @@
             <option value="permanent" selected>Permanent</option>
             <option value="internship">Internship</option>
         </select>
-        <button class="btn btn-success" id="scrapeBtn">
+        <button class="btn btn-primary" id="scrapeBtn">
             <i class="bi bi-arrow-repeat me-1"></i>Scrape New Jobs
         </button>
     </div>
@@ -18,33 +18,33 @@
 <!-- Search Filters -->
 <div class="card mb-4">
     <div class="card-body">
-        <form method="get" action="/jobs" id="searchForm">
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <label for="keyword" class="form-label">Keyword</label>
-                    <input type="text" class="form-control" id="keyword" name="keyword"
-                           value="{{ keyword or '' }}" placeholder="e.g. Python, Data Engineer">
-                </div>
-                <div class="col-md-3">
-                    <label for="location" class="form-label">Location</label>
-                    <input type="text" class="form-control" id="location" name="location"
-                           value="{{ location or '' }}" placeholder="e.g. San Francisco, Remote">
-                </div>
-                <div class="col-md-2">
-                    <label for="date_from" class="form-label">Date From</label>
-                    <input type="date" class="form-control" id="date_from" name="date_from"
-                           value="{{ date_from or '' }}">
-                </div>
-                <div class="col-md-2">
-                    <label for="date_to" class="form-label">Date To</label>
-                    <input type="date" class="form-control" id="date_to" name="date_to"
-                           value="{{ date_to or '' }}">
-                </div>
-                <div class="col-md-1 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-search"></i>
-                    </button>
-                </div>
+        <form method="get" action="/jobs" id="searchForm" class="row g-3 align-items-end">
+            <div class="col-md">
+                <input type="text" class="form-control" id="keyword" name="keyword"
+                       value="{{ keyword or '' }}" placeholder="Keyword (e.g. Python)">
+            </div>
+            
+            <div class="col-md">
+                <input type="text" class="form-control" id="location" name="location"
+                       value="{{ location or '' }}" placeholder="Location (e.g. Remote)">
+            </div>
+            
+            <div class="col-md-auto d-flex align-items-center gap-2">
+                <label for="date_from" class="text-muted mb-0 text-nowrap">From</label>
+                <input type="date" class="form-control" id="date_from" name="date_from"
+                       value="{{ date_from or '' }}" title="Date From">
+            </div>
+            
+            <div class="col-md-auto d-flex align-items-center gap-2">
+                <label for="date_to" class="text-muted mb-0 text-nowrap">To</label>
+                <input type="date" class="form-control" id="date_to" name="date_to"
+                       value="{{ date_to or '' }}" title="Date To">
+            </div>
+            
+            <div class="col-md-auto">
+                <button type="submit" class="btn btn-secondary px-4 w-100">
+                    <i class="bi bi-search me-1"></i>Search
+                </button>
             </div>
         </form>
     </div>

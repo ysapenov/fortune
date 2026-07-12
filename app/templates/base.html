@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Job Hunt Helper{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet"
-          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7icsOifkY7NS4dflLfGU28Q2e6gQ2yGU3Z"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
           crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
           rel="stylesheet">
@@ -14,62 +14,61 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/jobs">
-                <i class="bi bi-briefcase-fill me-2"></i>Job Hunt Helper
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarNav" aria-controls="navbarNav"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+    <div class="app-layout">
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a class="brand" href="/jobs">
+                    <i class="bi bi-briefcase-fill me-2"></i>Job Hunt Helper
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link {% if active_page == 'jobs' %}active{% endif %}"
-                           href="/jobs">
-                            <i class="bi bi-search me-1"></i>Jobs
+                        <a class="nav-link {% if active_page == 'jobs' %}active{% endif %}" href="/jobs">
+                            <i class="bi bi-search"></i> Jobs
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if active_page == 'resumes' %}active{% endif %}"
-                           href="/resumes">
-                            <i class="bi bi-file-earmark-person me-1"></i>Resumes
+                        <a class="nav-link {% if active_page == 'resumes' %}active{% endif %}" href="/resumes">
+                            <i class="bi bi-file-earmark-person"></i> Resumes
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if active_page == 'applications' %}active{% endif %}"
-                           href="/applications">
-                            <i class="bi bi-send me-1"></i>Applications
+                        <a class="nav-link {% if active_page == 'applications' %}active{% endif %}" href="/applications">
+                            <i class="bi bi-send"></i> Applications
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if active_page == 'interviews' %}active{% endif %}"
-                           href="/interviews">
-                            <i class="bi bi-chat-dots me-1"></i>Interview Prep
+                        <a class="nav-link {% if active_page == 'interviews' %}active{% endif %}" href="/interviews">
+                            <i class="bi bi-chat-dots"></i> Interview Prep
                         </a>
                     </li>
                 </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <p class="small text-muted mb-0">&copy; 2026 Job Hunt Helper</p>
             </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+
+            <!-- Flash messages are handled by main.js via showAlert() -->
+            
+            <main class="main-content">
+                <div class="container-fluid py-4">
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
         </div>
-    </nav>
+    </div>
 
-    <!-- Flash messages are handled by main.js via showAlert() -->
-
-    <main class="container my-4">
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer class="bg-light border-top py-4 mt-5">
-        <div class="container text-center text-muted">
-            <p class="mb-1">&copy; 2026 Job Hunt Helper &mdash; Your Personal Job Search Assistant</p>
-            <p class="small mb-0">Built with FastAPI, SQLAlchemy &amp; Bootstrap 5</p>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmxc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
     <script src="/static/js/main.js"></script>
     {% block extra_scripts %}{% endblock %}
