@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}{{ job.title }} at {{ job.company }} — Job Hunt Helper{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/jobs">Jobs</a></li>
+        <li class="breadcrumb-item active">{{ job.title }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h1 class="card-title h3">{{ job.title }}</h1>
+                <h2 class="card-subtitle text-muted h5 mb-3">{{ job.company }}</h2>
+
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    {% if job.location %}
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-geo-alt me-1"></i>{{ job.location }}
+                    </span>
+                    {% endif %}
+                    {% if job.date_posted %}
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-calendar me-1"></i>{{ job.date_posted.strftime('%Y-%m-%d') }}
+                    </span>
+                    {% endif %}
+                    {% if job.is_active %}
+                    <span class="badge bg-success">Active</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                </div>
+
+                <h5>Description</h5>
+                <div class="job-description mb-4">
+                    {{ job.description or 'No description available.' }}
+                </div>
+
+                {% if job.keywords %}
+                <h5>Keywords</h5>
+                <div class="mb-3" id="kw-badges">
+                    {# keywords stored as JSON list e.g. ["python","sql"] #}
+                </div>
+                <script>
+                    (function() {
+                        var raw = {{ job.keywords | tojson }};
+                        var kws = [];
+                        try { kws = JSON.parse(raw); } catch(e) { kws = raw.split(','); }
+                        if (!Array.isArray(kws)) kws = [kws];
+                        var container = document.getElementById('kw-badges');
+                        kws.forEach(function(kw) {
+                            var span = document.createElement('span');
+                            span.className = 'badge bg-info text-dark me-1';
+                            span.textContent = kw.trim ? kw.trim() : kw;
+                            container.appendChild(span);
+                        });
+                    })();
+                </script>
+                {% endif %}
+
+                {% if job.url %}
+                <a href="{{ job.url }}" target="_blank" class="btn btn-outline-secondary">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>View Original Posting
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">Actions</h5>
+            </div>
+            <div class="card-body d-grid gap-2">
+                <a href="/applications/new?job_id={{ job.id }}" class="btn btn-primary">
+                    <i class="bi bi-send me-1"></i>Apply to This Job
+                </a>
+                <a href="/interviews/new?job_id={{ job.id }}&company={{ job.company }}"
+                   class="btn btn-outline-info">
+                    <i class="bi bi-chat-dots me-1"></i>Prepare for Interview
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Details</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Company</span>
+                    <strong>{{ job.company }}</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Location</span>
+                    <span>{{ job.location or 'N/A' }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Discovered</span>
+                    <span>{{ job.date_discovered.strftime('%Y-%m-%d') if job.date_discovered else 'N/A' }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Source</span>
+                    <span>{{ job.source or 'Direct' }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

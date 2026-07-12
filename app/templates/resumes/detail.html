@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}{{ resume.filename }} — Job Hunt Helper{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/resumes">Resumes</a></li>
+        <li class="breadcrumb-item active">{{ resume.filename }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">{{ resume.filename }}</h5>
+                <span class="badge bg-{{ 'success' if resume.parsed_data else 'warning' }}">
+                    {{ 'Parsed' if resume.parsed_data else 'Pending' }}
+                </span>
+            </div>
+            <div class="card-body">
+                {% if parsed %}
+                    {% if parsed.name %}
+                    <h4>{{ parsed.name }}</h4>
+                    {% endif %}
+
+                    {% if parsed.contact %}
+                    <div class="mb-3">
+                        <h6 class="text-muted">Contact</h6>
+                        {% if parsed.contact.email %}
+                        <span class="me-3"><i class="bi bi-envelope me-1"></i>{{ parsed.contact.email }}</span>
+                        {% endif %}
+                        {% if parsed.contact.phone %}
+                        <span class="me-3"><i class="bi bi-phone me-1"></i>{{ parsed.contact.phone }}</span>
+                        {% endif %}
+                        {% if parsed.contact.location %}
+                        <span><i class="bi bi-geo-alt me-1"></i>{{ parsed.contact.location }}</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    {% if parsed.skills %}
+                    <div class="mb-3">
+                        <h6 class="text-muted">Skills</h6>
+                        {% for skill in parsed.skills %}
+                        <span class="badge bg-info text-dark me-1 mb-1">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if parsed.experience %}
+                    <div class="mb-3">
+                        <h6 class="text-muted">Experience</h6>
+                        {% for exp in parsed.experience %}
+                        <div class="border-start border-3 border-primary ps-3 mb-3">
+                            <strong>{{ exp.title or 'Position' }}</strong>
+                            {% if exp.company %} at {{ exp.company }}{% endif %}
+                            {% if exp.dates %}
+                            <br><small class="text-muted">{{ exp.dates }}</small>
+                            {% endif %}
+                            {% if exp.description %}
+                            <p class="mt-1 mb-0">{{ exp.description }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if parsed.education %}
+                    <div class="mb-3">
+                        <h6 class="text-muted">Education</h6>
+                        {% for edu in parsed.education %}
+                        <div class="mb-2">
+                            <strong>{{ edu.degree or edu.institution or 'Education' }}</strong>
+                            {% if edu.institution %} — {{ edu.institution }}{% endif %}
+                            {% if edu.year %} ({{ edu.year }}){% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-hourglass display-6 d-block mb-2"></i>
+                    Resume has not been parsed yet. Parsing may take a moment.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">Optimize for Job</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" action="/resumes/{{ resume.id }}/optimize">
+                    <div class="mb-3">
+                        <label for="job_id" class="form-label">Select Job Posting</label>
+                        <select class="form-select" id="job_id" name="job_id" required>
+                            <option value="">Choose a job...</option>
+                            {% if jobs %}
+                            {% for job in jobs %}
+                            <option value="{{ job.id }}">{{ job.company }} — {{ job.title }}</option>
+                            {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-magic me-1"></i>Optimize Resume
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Details</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Filename</span>
+                    <span>{{ resume.filename }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Uploaded</span>
+                    <span>{{ resume.created_at.strftime('%Y-%m-%d') if resume.created_at else 'N/A' }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Updated</span>
+                    <span>{{ resume.updated_at.strftime('%Y-%m-%d') if resume.updated_at else 'N/A' }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

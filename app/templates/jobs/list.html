@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Job Search — Job Hunt Helper{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-search me-2"></i>Job Search</h1>
+    <div class="d-flex gap-2">
+        <select class="form-select" id="jobTypeSelect" style="width: auto;">
+            <option value="permanent" selected>Permanent</option>
+            <option value="internship">Internship</option>
+        </select>
+        <button class="btn btn-success" id="scrapeBtn">
+            <i class="bi bi-arrow-repeat me-1"></i>Scrape New Jobs
+        </button>
+    </div>
+</div>
+
+<!-- Search Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" action="/jobs" id="searchForm">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="keyword" class="form-label">Keyword</label>
+                    <input type="text" class="form-control" id="keyword" name="keyword"
+                           value="{{ keyword or '' }}" placeholder="e.g. Python, Data Engineer">
+                </div>
+                <div class="col-md-3">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control" id="location" name="location"
+                           value="{{ location or '' }}" placeholder="e.g. San Francisco, Remote">
+                </div>
+                <div class="col-md-2">
+                    <label for="date_from" class="form-label">Date From</label>
+                    <input type="date" class="form-control" id="date_from" name="date_from"
+                           value="{{ date_from or '' }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="date_to" class="form-label">Date To</label>
+                    <input type="date" class="form-control" id="date_to" name="date_to"
+                           value="{{ date_to or '' }}">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Search Results</span>
+        <span class="badge bg-secondary">{{ jobs|length if jobs else 0 }} jobs</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Company</th>
+                    <th>Title</th>
+                    <th>Location</th>
+                    <th>Date Posted</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if jobs %}
+                {% for job in jobs %}
+                <tr>
+                    <td><strong>{{ job.company }}</strong></td>
+                    <td>
+                        <a href="/jobs/{{ job.id }}">{{ job.title }}</a>
+                    </td>
+                    <td>{{ job.location or 'N/A' }}</td>
+                    <td>{{ job.date_posted.strftime('%Y-%m-%d') if job.date_posted else 'N/A' }}</td>
+                    <td>
+                        <a href="/jobs/{{ job.id }}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+                        <button class="btn btn-sm btn-outline-danger delete-job-btn ms-1" data-job-id="{{ job.id }}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-6 d-block mb-2"></i>
+                        No jobs found. Try adjusting your filters or scrape new postings.
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Scrape Status Modal -->
+<div class="modal fade" id="scrapeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Scraping Jobs</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="scrapeStatus">
+                    <div class="spinner-border text-primary me-2" role="status"></div>
+                    Scraping job postings from target companies...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

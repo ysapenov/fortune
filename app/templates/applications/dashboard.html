@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Application Dashboard - Job Hunt Helper{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="display-5 fw-bold">Application Dashboard</h2>
+        <p class="lead">Track your job search progress, success rates, and application timelines.</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Applications</h5>
+                <p class="card-text display-4" id="metric-total">0</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Timeline of Submissions</h5>
+                <canvas id="timelineChart" style="max-height: 200px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-center">Status Distribution</h5>
+                <div style="position: relative; height:300px; width:100%">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title text-center">Success Rate by Company</h5>
+                <div style="position: relative; height:300px; width:100%">
+                    <canvas id="successChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h4>Recent Applications</h4>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Job ID</th>
+                        <th>Date Submitted / Created</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="applications-tbody">
+                    <!-- Populated via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/chart.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        try {
+            const response = await fetch("/api/applications/dashboard");
+            if (!response.ok) throw new Error("Failed to fetch dashboard data");
+            const data = await response.json();
+            
+            // Populate Metric
+            document.getElementById("metric-total").textContent = data.total;
+
+            // Render Timeline Chart (Bar)
+            const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+            new Chart(timelineCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.timeline.map(t => t.date),
+                    datasets: [{
+                        label: 'Applications',
+                        data: data.timeline.map(t => t.count),
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+
+            // Render Status Chart (Donut)
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            const statuses = Object.keys(data.status_counts);
+            const statusValues = Object.values(data.status_counts);
+            const statusColors = statuses.map(s => {
+                switch(s) {
+                    case 'draft': return '#6c757d';
+                    case 'submitted': return '#0d6efd';
+                    case 'interview': return '#ffc107';
+                    case 'offer': return '#198754';
+                    case 'rejected': return '#dc3545';
+                    default: return '#000000';
+                }
+            });
+            
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statuses.map(s => s.charAt(0).toUpperCase() + s.slice(1)),
+                    datasets: [{
+                        data: statusValues,
+                        backgroundColor: statusColors,
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // Render Success Rate Chart (Radar)
+            const successCtx = document.getElementById('successChart').getContext('2d');
+            new Chart(successCtx, {
+                type: 'radar',
+                data: {
+                    labels: data.success_rates.map(s => s.company),
+                    datasets: [{
+                        label: 'Success Rate (%)',
+                        data: data.success_rates.map(s => s.rate),
+                        backgroundColor: 'rgba(25, 135, 84, 0.2)',
+                        borderColor: 'rgba(25, 135, 84, 1)',
+                        pointBackgroundColor: 'rgba(25, 135, 84, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { r: { beginAtZero: true, max: 100 } }
+                }
+            });
+
+            // Render Table
+            const tbody = document.getElementById("applications-tbody");
+            data.recent_applications.forEach(app => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${app.id}</td>
+                    <td><a href="/jobs/${app.job_posting_id}">Job #${app.job_posting_id}</a></td>
+                    <td>${app.submitted_at || 'Not submitted'}</td>
+                    <td>
+                        ${app.status === 'draft'
+                            ? '<span class="badge bg-secondary">Draft (confirm to submit)</span>'
+                            : `<select class="form-select form-select-sm status-select" data-id="${app.id}">
+                                <option value="submitted" ${app.status === 'submitted' ? 'selected' : ''}>Submitted</option>
+                                <option value="interview" ${app.status === 'interview' ? 'selected' : ''}>Interview</option>
+                                <option value="offer" ${app.status === 'offer' ? 'selected' : ''}>Offer</option>
+                                <option value="rejected" ${app.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                            </select>`
+                        }
+                    </td>
+                    <td>
+                        ${app.status === 'draft'
+                            ? `<a href="/applications/confirm/${app.id}" class="btn btn-sm btn-success">Confirm &amp; Submit</a>`
+                            : `<button class="btn btn-sm btn-primary update-status-btn" data-id="${app.id}" disabled>Update Status</button>`
+                        }
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Handle status updates
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', (e) => {
+                    const btn = document.querySelector(`.update-status-btn[data-id="${e.target.dataset.id}"]`);
+                    btn.disabled = false;
+                });
+            });
+
+            document.querySelectorAll('.update-status-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.dataset.id;
+                    const select = document.querySelector(`.status-select[data-id="${id}"]`);
+                    const newStatus = select.value;
+                    
+                    try {
+                        const res = await fetch(`/api/applications/${id}/status`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ status: newStatus })
+                        });
+                        
+                        if (!res.ok) {
+                            const error = await res.json();
+                            alert("Failed to update status: " + JSON.stringify(error));
+                        } else {
+                            alert("Status updated successfully! Reload to see updated charts.");
+                            e.target.disabled = true;
+                        }
+                    } catch (err) {
+                        alert("Error updating status: " + err);
+                    }
+                });
+            });
+
+        } catch (error) {
+            console.error("Dashboard error:", error);
+        }
+    });
+</script>
+{% endblock %}

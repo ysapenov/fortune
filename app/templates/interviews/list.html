@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+{% block title %}Interview Prep — Job Hunt Helper{% endblock %}
+
+{% block extra_head %}
+{% if auto_open_modal %}
+<script>
+    // Pre-fill values passed from /interviews/new
+    window._prepFill = {
+        company: {{ prefill_company | tojson }},
+        jobId: {{ prefill_job_id | tojson }},
+        title: {{ prefill_title | tojson }},
+        autoOpen: true
+    };
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="bi bi-chat-dots me-2"></i>Interview Prep</h1>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateModal">
+        <i class="bi bi-plus-circle me-1"></i>Generate New Prep
+    </button>
+</div>
+
+<!-- Existing Preps Table -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Saved Interview Prep Materials</span>
+        <span class="badge bg-secondary" id="prep-count">0</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Company</th>
+                    <th>Job Posting</th>
+                    <th>Generated</th>
+                    <th>Questions</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="preps-tbody">
+                <tr id="empty-row">
+                    <td colspan="5" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-6 d-block mb-2"></i>
+                        No interview preps yet. Generate one to get started.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Generate Modal -->
+<div class="modal fade" id="generateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-magic me-2"></i>Generate Interview Prep</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="gen-error" class="alert alert-danger d-none"></div>
+                <form id="generateForm">
+                    <div class="mb-3">
+                        <label for="gen-company" class="form-label">Company Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="gen-company" placeholder="e.g. Google, Microsoft" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="gen-job-id" class="form-label">Job Posting ID <span class="text-muted">(optional)</span></label>
+                        <input type="number" class="form-control" id="gen-job-id" placeholder="Leave blank for general prep">
+                    </div>
+                    <div class="mb-3">
+                        <label for="gen-title" class="form-label">Job Title <span class="text-muted">(optional)</span></label>
+                        <input type="text" class="form-control" id="gen-title" placeholder="e.g. Senior Software Engineer">
+                    </div>
+                    <div class="mb-3">
+                        <label for="gen-description" class="form-label">Job Description <span class="text-muted">(optional)</span></label>
+                        <textarea class="form-control" id="gen-description" rows="4" placeholder="Paste job description for tailored questions..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="generateBtn">
+                    <i class="bi bi-cpu me-1"></i>Generate with AI
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detail Modal -->
+<div class="modal fade modal-lg" id="detailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detail-title">Interview Prep Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="detail-body">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+            <div class="modal-footer">
+                <a id="detail-export-btn" href="#" class="btn btn-success" target="_blank">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Download PDF
+                </a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadPreps();
+
+    // Auto-open modal with pre-filled values (from /interviews/new redirect)
+    if (window._prepFill && window._prepFill.autoOpen) {
+        const fill = window._prepFill;
+        if (fill.company) document.getElementById('gen-company').value = fill.company;
+        if (fill.jobId) document.getElementById('gen-job-id').value = fill.jobId;
+        if (fill.title) document.getElementById('gen-title').value = fill.title;
+        new bootstrap.Modal(document.getElementById('generateModal')).show();
+    }
+
+    // Generate button
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+        const company = document.getElementById('gen-company').value.trim();
+        if (!company) {
+            showGenError('Company name is required.');
+            return;
+        }
+        const jobId = document.getElementById('gen-job-id').value || null;
+        const title = document.getElementById('gen-title').value.trim();
+        const description = document.getElementById('gen-description').value.trim();
+
+        const btn = document.getElementById('generateBtn');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Generating...';
+        btn.disabled = true;
+        hideGenError();
+
+        try {
+            const res = await fetch('/api/interviews/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    company_name: company,
+                    job_posting_id: jobId ? parseInt(jobId) : null,
+                    job_title: title,
+                    job_description: description
+                })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                showGenError(data.detail || 'Failed to generate prep.');
+            } else {
+                bootstrap.Modal.getInstance(document.getElementById('generateModal')).hide();
+                await loadPreps();
+            }
+        } catch (err) {
+            showGenError('Network error: ' + err.message);
+        } finally {
+            btn.innerHTML = '<i class="bi bi-cpu me-1"></i>Generate with AI';
+            btn.disabled = false;
+        }
+    });
+
+    // Reset form when modal closes
+    document.getElementById('generateModal').addEventListener('hidden.bs.modal', () => {
+        document.getElementById('generateForm').reset();
+        hideGenError();
+    });
+});
+
+async function loadPreps() {
+    try {
+        const res = await fetch('/api/interviews/');
+        const preps = await res.json();
+        const tbody = document.getElementById('preps-tbody');
+        document.getElementById('prep-count').textContent = preps.length;
+
+        if (!preps.length) {
+            tbody.innerHTML = `<tr id="empty-row"><td colspan="5" class="text-center text-muted py-4">
+                <i class="bi bi-inbox display-6 d-block mb-2"></i>No interview preps yet.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = '';
+        preps.forEach(p => {
+            const qCount = Array.isArray(p.questions) ? p.questions.length : 0;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${escHtml(p.company_name)}</strong></td>
+                <td>${p.job_posting_id ? `<a href="/jobs/${p.job_posting_id}">Job #${p.job_posting_id}</a>` : '<span class="text-muted">General</span>'}</td>
+                <td>${p.created_at ? p.created_at.substring(0, 10) : 'N/A'}</td>
+                <td><span class="badge bg-secondary">${qCount} questions</span></td>
+                <td class="d-flex gap-1">
+                    <button class="btn btn-sm btn-outline-primary view-btn" data-id="${p.id}">
+                        <i class="bi bi-eye"></i> View
+                    </button>
+                    <a href="/api/interviews/${p.id}/export" class="btn btn-sm btn-outline-success" target="_blank">
+                        <i class="bi bi-file-pdf"></i> PDF
+                    </a>
+                    <button class="btn btn-sm btn-outline-danger delete-prep-btn" data-id="${p.id}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        // View detail
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.dataset.id;
+                document.getElementById('detail-body').innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
+                document.getElementById('detail-export-btn').href = `/api/interviews/${id}/export`;
+                new bootstrap.Modal(document.getElementById('detailModal')).show();
+
+                const res = await fetch(`/api/interviews/${id}`);
+                const p = await res.json();
+                document.getElementById('detail-title').textContent = `${p.company_name} — Interview Prep`;
+
+                let questionsHtml = '';
+                if (Array.isArray(p.questions) && p.questions.length) {
+                    p.questions.forEach((q, i) => {
+                        const qText = typeof q === 'string' ? q : (q.question || JSON.stringify(q));
+                        const framework = typeof q === 'object' ? q.framework : '';
+                        questionsHtml += `<div class="mb-3"><strong>${i + 1}. ${escHtml(qText)}</strong>`;
+                        if (framework) questionsHtml += `<p class="text-muted small ms-3 mb-0"><em>${escHtml(framework)}</em></p>`;
+                        questionsHtml += `</div>`;
+                    });
+                } else {
+                    questionsHtml = '<p class="text-muted">No questions generated.</p>';
+                }
+
+                document.getElementById('detail-body').innerHTML = `
+                    <h6 class="fw-bold">Company Research Summary</h6>
+                    <p>${escHtml(p.research_summary || 'No summary available.')}</p>
+                    <hr>
+                    <h6 class="fw-bold">Interview Questions</h6>
+                    ${questionsHtml}
+                `;
+            });
+        });
+
+        // Delete
+        document.querySelectorAll('.delete-prep-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (!confirm('Delete this interview prep?')) return;
+                const id = btn.dataset.id;
+                const res = await fetch(`/api/interviews/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    btn.closest('tr').remove();
+                    document.getElementById('prep-count').textContent =
+                        parseInt(document.getElementById('prep-count').textContent) - 1;
+                } else {
+                    alert('Failed to delete.');
+                }
+            });
+        });
+
+    } catch (err) {
+        console.error('Failed to load preps:', err);
+    }
+}
+
+function showGenError(msg) {
+    const el = document.getElementById('gen-error');
+    el.textContent = msg;
+    el.classList.remove('d-none');
+}
+function hideGenError() {
+    document.getElementById('gen-error').classList.add('d-none');
+}
+function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+{% endblock %}

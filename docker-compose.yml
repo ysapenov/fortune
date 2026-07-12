@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    container_name: job-hunt-helper
+    ports:
+      - "8080:8000"
+    volumes:
+      # Mount data directory so the database persists across restarts
+      - ./data:/app/data
+    env_file:
+      - .env
+    restart: unless-stopped

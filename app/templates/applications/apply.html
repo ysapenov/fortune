@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Apply — {{ job.title }} at {{ job.company }} — Job Hunt Helper{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/jobs">Jobs</a></li>
+        <li class="breadcrumb-item"><a href="/jobs/{{ job.id }}">{{ job.title }}</a></li>
+        <li class="breadcrumb-item active">Apply</li>
+    </ol>
+</nav>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="bi bi-send me-2"></i>Apply — {{ job.title }}</h4>
+                <small class="text-muted">{{ job.company }}{% if job.location %} · {{ job.location }}{% endif %}</small>
+            </div>
+            <div class="card-body">
+                <div id="apply-error" class="alert alert-danger d-none"></div>
+                <div id="apply-success" class="alert alert-success d-none"></div>
+
+                <h6 class="fw-semibold mb-3">Select Resume <span class="text-muted">(optional)</span></h6>
+                <div class="mb-3">
+                    <select class="form-select" id="resume-select">
+                        <option value="">— No resume (apply without —</option>
+                        {% for r in resumes %}
+                        <option value="{{ r.id }}">{{ r.filename }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <h6 class="fw-semibold mb-3">Your Contact Info <span class="text-muted">(pre-fills application)</span></h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="applicant-name" placeholder="Your Name">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="applicant-email" placeholder="you@example.com">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Phone</label>
+                        <input type="text" class="form-control" id="applicant-phone" placeholder="+1 555 000 0000">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Notes <span class="text-muted">(optional)</span></label>
+                    <textarea class="form-control" id="app-notes" rows="3" placeholder="Any notes about this application..."></textarea>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="/jobs/{{ job.id }}" class="btn btn-outline-secondary">Cancel</a>
+                    <button class="btn btn-primary" id="createDraftBtn">
+                        <i class="bi bi-file-earmark me-1"></i>Create Draft Application
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.getElementById('createDraftBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('createDraftBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Creating...';
+    document.getElementById('apply-error').classList.add('d-none');
+
+    const resumeId = document.getElementById('resume-select').value || null;
+    const name = document.getElementById('applicant-name').value.trim();
+    const email = document.getElementById('applicant-email').value.trim();
+    const phone = document.getElementById('applicant-phone').value.trim();
+    const notes = document.getElementById('app-notes').value.trim();
+
+    const userProfile = {};
+    if (name) userProfile.applicant_name = name;
+    if (email) userProfile.applicant_email = email;
+    if (phone) userProfile.applicant_phone = phone;
+
+    try {
+        const res = await fetch('/api/applications/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                job_posting_id: {{ job.id }},
+                tailored_resume_id: resumeId ? parseInt(resumeId) : null,
+                user_profile: Object.keys(userProfile).length ? userProfile : null,
+                notes: notes || ''
+            })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            document.getElementById('apply-error').textContent = data.detail || 'Failed to create application.';
+            document.getElementById('apply-error').classList.remove('d-none');
+        } else {
+            document.getElementById('apply-success').textContent = `Draft application #${data.id} created! Redirecting to dashboard...`;
+            document.getElementById('apply-success').classList.remove('d-none');
+            setTimeout(() => { window.location.href = '/applications'; }, 1800);
+        }
+    } catch (err) {
+        document.getElementById('apply-error').textContent = 'Network error: ' + err.message;
+        document.getElementById('apply-error').classList.remove('d-none');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-file-earmark me-1"></i>Create Draft Application';
+    }
+});
+</script>
+{% endblock %}
