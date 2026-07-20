@@ -4,7 +4,7 @@ import json
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -24,8 +24,7 @@ class ResumeOut(BaseModel):
     filename: str
     parsed_data: Optional[str] = None
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class TailoredResumeOut(BaseModel):
     id: int
@@ -34,8 +33,7 @@ class TailoredResumeOut(BaseModel):
     tailored_data: Optional[str] = None
     file_path: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class OptimizeRequest(BaseModel):
     job_posting_id: int

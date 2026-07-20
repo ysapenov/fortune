@@ -38,6 +38,7 @@
 - `run.py` — Entry point script
 - `requirements.txt` — Dependencies
 - `README.md` — Project documentation
+- `.env` — Environment variables (API keys, etc.)
 - `documentation/` — Documentation directory including PRD.md, PROJECT.md, CONTRIBUTING.md
 - `data/companies.csv` — Pre-existing target company list
 - `scripts/` — Standalone test scripts
@@ -46,11 +47,11 @@
 ## Milestones
 | # | Name | Scope | Dependencies | Status |
 |---|------|-------|-------------|--------|
-| 1 | Backend Core + Job Scraping | FastAPI app setup, database models, job scraping service, job search limited strictly to provided list of companies (`data/companies.csv`) with relevant positions filtered by LLM | none | PLANNED |
-| 2 | Resume Optimization | PDF/DOCX parsing, structured representation, truthful LLM-powered tailoring (no hallucinations) adjusted to job posting, download as PDF/DOCX | M1 (database) | PLANNED |
-| 3 | Application Management | Pre-fill forms, review screen, explicit confirmation for submission, status tracking dashboard with editable status/date and graphical charts (Timeline Bar Chart, Status Donut Chart, Success Rate by Company Radar Chart) | M1 (database), M2 (resume data) | PLANNED |
-| 4 | Interview Preparation | LLM-generated structured prep: short company summary, 3 interesting facts, role-specific questions, web UI display, PDF export | M1 (database) | PLANNED |
-| 5 | Frontend + Integration + Docs + Tests | Web UI templates with chart libraries (e.g., Chart.js), full integration, README.md, API docs, CONTRIBUTING.md, pytest suite | M1-M4 | PLANNED |
+| 1 | Backend Core + Job Scraping | FastAPI app setup, database models, job scraping service, job search limited strictly to provided list of companies (`data/companies.csv`) with relevant positions filtered by LLM | none | DONE |
+| 2 | Resume Optimization | PDF/DOCX parsing, structured representation, truthful LLM-powered tailoring (no hallucinations) adjusted to job posting, download as PDF/DOCX | M1 (database) | DONE |
+| 3 | Application Management | Pre-fill forms, review screen, explicit confirmation for submission, status tracking dashboard with editable status/date and graphical charts (Timeline Bar Chart, Status Donut Chart, Success Rate by Company Radar Chart) | M1 (database), M2 (resume data) | DONE |
+| 4 | Interview Preparation | LLM-generated structured prep: short company summary, 3 interesting facts, role-specific questions, web UI display, PDF export | M1 (database) | IN PROGRESS |
+| 5 | Frontend + Integration + Docs + Tests | Web UI templates with chart libraries (e.g., Chart.js), full integration, README.md, API docs, CONTRIBUTING.md, pytest suite | M1-M4 | IN PROGRESS |
 
 ## Interface Contracts
 

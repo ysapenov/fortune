@@ -64,9 +64,9 @@ LLM-agnostic architecture (initially using Gemini API) with a Python FastAPI bac
 ## 4. Non-Functional Requirements & Tech Stack
 
 * **Backend:** Python FastAPI.
-* **Frontend:** Web UI (HTML/CSS/JS with Jinja2 templates) incorporating chart libraries (e.g., Chart.js).
+* **Frontend:** Web UI (HTML/CSS/JS with Jinja2 templates) incorporating chart libraries (e.g., Chart.js), adhering to Material Design 3 (M3) adaptive and accessible principles under the "Fortune" design system.
 * **Storage:** SQLite via SQLAlchemy (`database.py` and `models/`).
-* **Deployment & Setup:** The application must run locally with a single setup command (`python run.py` or `pip install -r requirements.txt && python run.py`).
+* **Deployment & Setup:** The application must run locally with a single setup command (`python run.py` or `pip install -r requirements.txt && python run.py`), after configuring the `.env` file for API keys.
 * **Testing:** Pytest framework. Code must achieve at least 70% test coverage on core modules (resume parser, job scraper, keyword matcher). Both Unit and Integration tests are required.
 
 ---

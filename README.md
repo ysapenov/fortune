@@ -13,7 +13,7 @@ A personal Job Hunt Helper application designed to automate and streamline the j
 
 - **Backend**: Python FastAPI
 - **Database**: SQLite (SQLAlchemy)
-- **Frontend**: Vanilla CSS + HTML Templates (Jinja2)
+- **Frontend**: Vanilla CSS + HTML Templates (Jinja2) following Material Design 3 (M3)
 - **Testing**: Pytest
 
 ## Setup & Running Locally
@@ -23,7 +23,13 @@ A personal Job Hunt Helper application designed to automate and streamline the j
    pip install -r requirements.txt
    ```
 
-2. **Run the Application**
+2. **Environment Variables**
+   Create a `.env` file in the root directory and add your API keys:
+   ```env
+   GEMINI_API_KEY=your_api_key_here
+   ```
+
+3. **Run the Application**
    ```bash
    python run.py
    ```

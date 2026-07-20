@@ -168,7 +168,7 @@
                     </td>
                     <td>
                         ${app.status === 'draft'
-                            ? `<a href="/applications/confirm/${app.id}" class="btn btn-sm btn-success">Confirm &amp; Submit</a>`
+                            ? `<button class="btn btn-sm btn-success confirm-app-btn" data-id="${app.id}">Confirm &amp; Submit</button>`
                             : `<button class="btn btn-sm btn-primary update-status-btn" data-id="${app.id}" disabled>Update Status</button>`
                         }
                     </td>
@@ -206,6 +206,37 @@
                         }
                     } catch (err) {
                         alert("Error updating status: " + err);
+                    }
+                });
+            });
+
+            // Handle confirm submissions
+            document.querySelectorAll('.confirm-app-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.dataset.id;
+                    if (!confirm('Are you sure you want to confirm and submit this application?')) return;
+                    
+                    e.target.disabled = true;
+                    e.target.textContent = 'Submitting...';
+                    
+                    try {
+                        const res = await fetch(`/api/applications/${id}/confirm`, {
+                            method: 'PUT'
+                        });
+                        
+                        if (!res.ok) {
+                            const error = await res.json();
+                            alert("Failed to submit: " + JSON.stringify(error));
+                            e.target.disabled = false;
+                            e.target.textContent = 'Confirm & Submit';
+                        } else {
+                            alert("Application confirmed and submitted successfully!");
+                            window.location.reload();
+                        }
+                    } catch (err) {
+                        alert("Error submitting: " + err);
+                        e.target.disabled = false;
+                        e.target.textContent = 'Confirm & Submit';
                     }
                 });
             });
