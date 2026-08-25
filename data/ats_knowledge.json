@@ -1,0 +1,272 @@
+[
+  {
+    "id": "ats_001",
+    "category": "keywords",
+    "tip": "Mirror exact phrases from the job description rather than using synonyms. ATS systems often perform literal string matching and will miss 'constructed scalable systems' if the posting says 'built scalable systems'.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_002",
+    "category": "keywords",
+    "tip": "Include the exact job title from the posting verbatim somewhere in your resume, preferably in the summary or a professional title line.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_003",
+    "category": "keywords",
+    "tip": "Extract both acronyms and their full forms from the job posting and include both variants. Write 'Machine Learning (ML)' the first time so both terms are present for the ATS scanner.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_004",
+    "category": "keywords",
+    "tip": "Prioritize keywords that appear multiple times or in multiple sections of the job description—they signal higher importance to the employer and the ATS.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_005",
+    "category": "keywords",
+    "tip": "Include required certifications and tools spelled exactly as in the posting: 'AWS Certified Solutions Architect' not just 'AWS certified'.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_006",
+    "category": "keywords",
+    "tip": "Do not stuff keywords in a hidden white-font section. Modern ATS and recruiters will detect and penalize this. All keywords must appear naturally in context.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_007",
+    "category": "keywords",
+    "tip": "Include soft-skill keywords from the posting (e.g., 'cross-functional collaboration', 'stakeholder communication') woven into experience bullet points, not just listed.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_008",
+    "category": "formatting",
+    "tip": "Use standard section headers: 'Experience', 'Education', 'Skills', 'Summary', 'Certifications'. Creative headers like 'My Journey' or 'What I have Built' confuse ATS parsers.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_009",
+    "category": "formatting",
+    "tip": "Use a single-column layout for ATS submission. Multi-column, table-based, or sidebar layouts frequently cause ATS parsers to misread or skip content entirely.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_010",
+    "category": "formatting",
+    "tip": "Avoid headers, footers, text boxes, and graphics. Content inside these elements is often invisible to ATS parsers.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_011",
+    "category": "formatting",
+    "tip": "Use standard bullet characters for lists. Decorative symbols, arrows, or emojis may be rendered as garbled characters by ATS systems.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_012",
+    "category": "formatting",
+    "tip": "Save and submit in .docx format when possible. Many ATS systems parse Word documents more reliably than PDFs, especially older enterprise systems.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_013",
+    "category": "formatting",
+    "tip": "Keep font sizes between 10-12pt for body text and 14-16pt for section headers. Avoid using font size changes to create structure that ATS parsers expect from semantic headers.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_014",
+    "category": "formatting",
+    "tip": "Do not use abbreviations for month names in date ranges. Write 'January 2023 - March 2024' or '01/2023 - 03/2024' for consistent ATS parsing.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_015",
+    "category": "content",
+    "tip": "Open every experience bullet with a strong action verb in the past tense (for past roles) or present tense (for current roles): 'Architected', 'Engineered', 'Drove', 'Scaled', 'Reduced'.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_016",
+    "category": "content",
+    "tip": "Keep bullet points to one to two lines. ATS systems truncate long bullets, and human reviewers skim. Front-load the most impactful part of each bullet.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_017",
+    "category": "content",
+    "tip": "Tailor the professional summary to the specific role. Include the job title, 2-3 core skills from the posting, and years of relevant experience in the first two sentences.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_018",
+    "category": "content",
+    "tip": "Reorder experience bullet points so that responsibilities most relevant to the target job appear first within each role block.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_019",
+    "category": "content",
+    "tip": "Remove experience older than 15 years unless it is directly critical. ATS systems rank recency, and older content dilutes keyword density for modern skills.",
+    "applies_to": ["experienced"]
+  },
+  {
+    "id": "ats_020",
+    "category": "content",
+    "tip": "Use the same tense consistently within a role bullet points. Mixing tenses signals inconsistency and can confuse resume parsers that infer role boundaries by grammatical patterns.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_021",
+    "category": "quantification",
+    "tip": "Quantify every achievement possible. Replace 'Improved system performance' with 'Reduced API p99 latency by 40% (from 800ms to 480ms) by introducing Redis caching.'",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_022",
+    "category": "quantification",
+    "tip": "Use scale indicators: team size, user counts, revenue impacted, data volumes, uptime SLAs. 'Led a team of 8 engineers' scores higher than 'Led a team'.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_023",
+    "category": "quantification",
+    "tip": "If exact numbers are confidential, use ranges or relative comparisons: 'reduced cost by 20-30%' or 'serving tens of millions of daily active users'.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_024",
+    "category": "quantification",
+    "tip": "Always include time context for metrics: 'Reduced build time by 60% over 3 months'. This grounds the achievement and shows scope.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_025",
+    "category": "sections",
+    "tip": "The Skills section should list technologies as a flat comma-separated list or simple categories (Languages, Frameworks, Cloud, Tools). Avoid paragraph-form or narrative descriptions in the Skills section.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_026",
+    "category": "sections",
+    "tip": "Order skills categories to match the job posting emphasis. If the job prioritizes cloud infrastructure, put Cloud and Infrastructure before Languages.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_027",
+    "category": "sections",
+    "tip": "Include a dedicated Certifications section if you hold any relevant ones. List the full certification name, issuing body, and expiry/issue year.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_028",
+    "category": "sections",
+    "tip": "Add a Projects section for significant side projects or open-source contributions that demonstrate skills the job requires but your work history does not cover.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_029",
+    "category": "sections",
+    "tip": "For education, include GPA only if it is above 3.5/4.0 and you graduated within the last 5 years. Otherwise omit it.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_030",
+    "category": "sections",
+    "tip": "If the role requires specific education levels, match your education section phrasing: write 'Bachelor of Science in Computer Science' not 'BS CS'.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_031",
+    "category": "skills",
+    "tip": "List programming languages with proficiency context when possible: 'Python (5 years, primary), Go (2 years), JavaScript (4 years)'. This helps human reviewers calibrate depth.",
+    "applies_to": ["technical"]
+  },
+  {
+    "id": "ats_032",
+    "category": "skills",
+    "tip": "Only list technologies you can discuss confidently in an interview. Listing a technology you barely know to pass ATS will backfire in the technical screen.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_033",
+    "category": "skills",
+    "tip": "Include cloud platform-specific services, not just the platform: 'AWS (EC2, ECS, Lambda, RDS, S3, CloudFormation)' scores higher than just 'AWS'.",
+    "applies_to": ["technical"]
+  },
+  {
+    "id": "ats_034",
+    "category": "skills",
+    "tip": "Mention framework versions or generations if they are distinct and relevant: 'React 18', 'Spring Boot 3'. This signals current-generation knowledge.",
+    "applies_to": ["technical"]
+  },
+  {
+    "id": "ats_035",
+    "category": "skills",
+    "tip": "Do not list 'Microsoft Office' or 'Email' unless specifically asked. These are assumed baseline and consume space that could hold high-value technical skills.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_036",
+    "category": "common_mistakes",
+    "tip": "Do not include a photo, address, marital status, or date of birth. These are unnecessary for ATS processing and may introduce bias risk.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_037",
+    "category": "common_mistakes",
+    "tip": "Avoid using the same resume for every application. Even small tailoring—updating the summary, reordering skills, and swapping 2-3 bullets—can raise ATS match scores significantly.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_038",
+    "category": "common_mistakes",
+    "tip": "Do not use 'I', 'my', or first-person pronouns anywhere on the resume. ATS parsers and convention treat the resume as a third-person fact sheet.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_039",
+    "category": "common_mistakes",
+    "tip": "Spell out numbers under 10 in prose but use numerals for metrics: 'Led five engineers' vs 'Reduced latency by 40%'. Inconsistency signals lack of polish.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_040",
+    "category": "common_mistakes",
+    "tip": "Proofread for spelling and grammar. Some ATS systems flag resumes with a high error count, and every recruiter scrutinizes language quality for communication-heavy roles.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_041",
+    "category": "common_mistakes",
+    "tip": "Avoid overly generic summaries like 'Passionate professional with strong communication skills'. Replace with a specific, role-targeted statement that includes concrete technologies and outcomes.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_042",
+    "category": "content",
+    "tip": "Use the CAR framework for bullet points: Context, Action, Result. This produces measurable story-driven bullets that score well with both ATS and human reviewers.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_043",
+    "category": "content",
+    "tip": "For leadership roles, emphasize team size, cross-functional scope, and business outcomes. Highlight partnered with Product and Design to ship X over purely technical implementation details.",
+    "applies_to": ["management"]
+  },
+  {
+    "id": "ats_044",
+    "category": "keywords",
+    "tip": "Include industry-specific methodology keywords from the posting: 'Agile', 'Scrum', 'Kanban', 'SAFe', 'CI/CD', 'DevSecOps', 'SRE'. These are frequently parsed as filters.",
+    "applies_to": ["all"]
+  },
+  {
+    "id": "ats_045",
+    "category": "formatting",
+    "tip": "Keep resume to one page for fewer than 7 years of experience, and two pages maximum for senior roles. ATS systems do not penalize length, but hiring managers skim long resumes and miss key content.",
+    "applies_to": ["all"]
+  }
+]

@@ -45,3 +45,27 @@ TAILORED_RESUME_DIR = os.getenv(
     "TAILORED_RESUME_DIR",
     str(BASE_DIR / "storage" / "tailored"),
 )
+
+# --- RAG / Vector Search ---
+
+# ChromaDB persistent storage directory
+CHROMA_DB_PATH = os.getenv(
+    "CHROMA_DB_PATH",
+    str(BASE_DIR / "data" / "chroma_db"),
+)
+
+# Gemini embedding model
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
+
+# Chunking settings for resume / job description segmentation
+RAG_CHUNK_SIZE = int(os.getenv("RAG_CHUNK_SIZE", "500"))
+RAG_CHUNK_OVERLAP = int(os.getenv("RAG_CHUNK_OVERLAP", "50"))
+
+# Number of chunks to retrieve per RAG query
+RAG_TOP_K = int(os.getenv("RAG_TOP_K", "5"))
+
+# Path to the bundled ATS best-practice knowledge base
+ATS_KNOWLEDGE_PATH = os.getenv(
+    "ATS_KNOWLEDGE_PATH",
+    str(BASE_DIR / "data" / "ats_knowledge.json"),
+)

@@ -8,12 +8,16 @@ from fastapi.staticfiles import StaticFiles
 
 from app.database import init_db
 from app.routers import applications, frontend, interviews, jobs, resumes
+from app.routers import recommendations
+from app.services.vector_store import vector_store
 
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):
-    """Application lifespan: initialise DB on startup."""
+    """Application lifespan: initialise DB and vector store on startup."""
     init_db()
+    # Initialise ChromaDB collections and seed ATS knowledge base.
+    vector_store.init_store()
     yield
 
 
@@ -41,6 +45,8 @@ app.include_router(jobs.router)
 app.include_router(resumes.router)
 app.include_router(applications.router)
 app.include_router(interviews.router)
+app.include_router(recommendations.router)
 
 # Frontend / HTML Routers (must come last to avoid shadowing API routes)
 app.include_router(frontend.router)
+

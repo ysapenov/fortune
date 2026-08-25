@@ -214,3 +214,71 @@ def rank_keywords(text: str) -> List[Tuple[str, int]]:
             counts[kw] += c
 
     return counts.most_common()
+
+
+def compute_semantic_match(
+    resume_text: str,
+    job_description: str,
+    keyword_weight: float = 0.5,
+) -> Dict:
+    """Compute a combined keyword + semantic similarity score.
+
+    Uses the embedding service to produce a cosine similarity between the
+    full resume text and job description, then blends it with the keyword
+    match percentage into a single ``combined_score``.
+
+    Args:
+        resume_text: Flat text of the resume.
+        job_description: Full job description text.
+        keyword_weight: Weight assigned to the keyword score (0–1).
+            The semantic score receives ``1 - keyword_weight``.
+
+    Returns:
+        Dict with:
+          ``keyword_match``   — percentage from compute_match()
+          ``semantic_match``  — cosine similarity 0–100 (or None on failure)
+          ``combined_score``  — weighted average of the two
+          ``keyword_detail``  — full output of compute_match()
+    """
+    # Lazy import to avoid circular dependency and keep startup fast.
+    from app.services.embedding_service import embedding_service  # noqa: PLC0415
+
+    keyword_detail = compute_match(resume_text, job_description)
+    kw_score = keyword_detail.get("match_percentage", 0.0)
+
+    # Compute semantic similarity via embeddings.
+    semantic_score: Optional[float] = None
+    try:
+        resume_emb = embedding_service.embed_query(resume_text)
+        job_emb = embedding_service.embed_query(job_description)
+        if resume_emb and job_emb:
+            # Cosine similarity: dot product of two unit vectors.
+            import math  # noqa: PLC0415
+
+            dot = sum(a * b for a, b in zip(resume_emb, job_emb))
+            norm_r = math.sqrt(sum(x * x for x in resume_emb))
+            norm_j = math.sqrt(sum(x * x for x in job_emb))
+            if norm_r > 0 and norm_j > 0:
+                cosine = dot / (norm_r * norm_j)
+                # Clamp to [0, 1] and scale to percentage
+                semantic_score = round(max(0.0, min(1.0, cosine)) * 100.0, 2)
+    except Exception as exc:  # pragma: no cover
+        import logging  # noqa: PLC0415
+
+        logging.getLogger(__name__).warning("Semantic embedding failed: %s", exc)
+
+    # Combined score — falls back to keyword-only if semantic unavailable.
+    if semantic_score is not None:
+        combined = round(
+            kw_score * keyword_weight + semantic_score * (1 - keyword_weight), 2
+        )
+    else:
+        combined = round(kw_score, 2)
+
+    return {
+        "keyword_match": round(kw_score, 2),
+        "semantic_match": semantic_score,
+        "combined_score": combined,
+        "keyword_detail": keyword_detail,
+    }
+

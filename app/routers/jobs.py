@@ -98,6 +98,8 @@ def list_jobs(
 @router.post("/scrape", response_model=ScrapeResult)
 def scrape_jobs(body: ScrapeRequest, db: Session = Depends(get_db)):
     """Trigger scraping for all or specific companies."""
+    from app.services.vector_store import vector_store  # noqa: PLC0415
+
     try:
         new = _scraper.scrape(
             db,
@@ -105,6 +107,23 @@ def scrape_jobs(body: ScrapeRequest, db: Session = Depends(get_db)):
             job_type=body.job_type,
             max_per_company=body.max_per_company,
         )
+        # Auto-index new postings into the vector store.
+        for posting in new:
+            job_id = posting.get("id")
+            if not job_id:
+                continue
+            text = f"{posting.get('title', '')}\n{posting.get('company', '')}\n{posting.get('description', '')}"
+            meta = {
+                "company": posting.get("company", "") or "",
+                "title": posting.get("title", "") or "",
+                "location": posting.get("location", "") or "",
+            }
+            try:
+                vector_store.add_job_posting(job_id=job_id, text=text, metadata=meta)
+            except Exception as ve:
+                import logging  # noqa: PLC0415
+                logging.getLogger(__name__).warning("VS index failed for job %s: %s", job_id, ve)
+
         return ScrapeResult(
             new_postings=len(new),
             message=f"Scraped {len(new)} new job postings.",

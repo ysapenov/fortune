@@ -16,3 +16,4 @@ pytest-cov
 httpx
 google-genai
 playwright
+chromadb
