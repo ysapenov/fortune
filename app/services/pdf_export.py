@@ -260,6 +260,20 @@ def export_interview_prep_pdf(
     # ─── Interview Questions Section ───
     story.append(Paragraph("Interview Questions", styles["SectionHeader"]))
 
+    # Normalize questions to dicts if they are plain strings
+    normalized_questions = []
+    for idx, q in enumerate(questions or [], start=1):
+        if isinstance(q, str):
+            normalized_questions.append({
+                "question": q,
+                "category": "general",
+                "number": idx,
+                "framework": "",
+            })
+        elif isinstance(q, dict):
+            normalized_questions.append(q)
+    questions = normalized_questions
+
     # Group questions by category
     categories_order = ["technical", "behavioral", "company-specific"]
     category_labels = {

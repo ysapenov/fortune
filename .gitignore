@@ -6,4 +6,6 @@ storage/
 data/*.db
 data/*.sqlite
 data/chroma_db/
+.coverage
 logs/
+

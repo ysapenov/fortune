@@ -17,7 +17,7 @@ from typing import Optional
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.models import Application, JobPosting, TailoredResume
+from app.models.models import Application, ApplicationStatus, JobPosting, TailoredResume
 
 
 # Valid status values and allowed transitions
@@ -138,7 +138,7 @@ def create_application(
         job_posting_id=job_posting_id,
         tailored_resume_id=tailored_resume_id,
         status="draft",  # ALWAYS draft — never auto-submitted
-        prefilled_data=prefilled_data,
+        prefilled_data=json.dumps(prefilled_data) if isinstance(prefilled_data, dict) else prefilled_data,
         notes=notes or "",
         submitted_at=None,  # Not submitted yet
     )
@@ -204,17 +204,27 @@ def update_application(
     if not application:
         raise ValueError(f"Application with id {application_id} not found")
 
-    if application.status != "draft":
+    if str(application.status).lower() not in ("draft", "applicationstatus.draft"):
         raise ValueError(
             f"Cannot modify application in '{application.status}' status. "
             "Only 'draft' applications can be edited."
         )
 
     # Update prefilled_data fields
-    current_data = application.prefilled_data or {}
-    if isinstance(current_data, dict) and isinstance(updates, dict):
+    current_raw = application.prefilled_data
+    if isinstance(current_raw, str):
+        try:
+            current_data = json.loads(current_raw)
+        except Exception:
+            current_data = {}
+    elif isinstance(current_raw, dict):
+        current_data = current_raw
+    else:
+        current_data = {}
+
+    if isinstance(updates, dict):
         current_data.update(updates)
-        application.prefilled_data = current_data
+        application.prefilled_data = json.dumps(current_data)
 
     # Update notes if provided
     if "notes" in updates:
@@ -247,15 +257,22 @@ def confirm_application(db: Session, application_id: int) -> Application:
     if not application:
         raise ValueError(f"Application with id {application_id} not found")
 
-    if application.status != "draft":
+    current_status = (
+        application.status.value
+        if hasattr(application.status, "value")
+        else str(application.status)
+    ).lower()
+
+    if current_status != "draft":
         raise ValueError(
-            f"Cannot confirm application in '{application.status}' status. "
+            f"Cannot confirm application in '{current_status}' status. "
             "Only 'draft' applications can be confirmed for submission."
         )
 
     # Transition to submitted — this is the only path to 'submitted'
-    application.status = "submitted"
+    application.status = ApplicationStatus.SUBMITTED
     application.submitted_at = datetime.now(timezone.utc)
+    application.status_updated_at = datetime.now(timezone.utc)
 
     db.commit()
     db.refresh(application)
@@ -291,26 +308,36 @@ def update_application_status(
     if not application:
         raise ValueError(f"Application with id {application_id} not found")
 
-    if new_status not in VALID_STATUSES:
+    new_status_str = new_status.lower()
+    if new_status_str not in VALID_STATUSES:
         raise ValueError(f"Invalid status '{new_status}'. Must be one of: {VALID_STATUSES}")
 
-    current_status = application.status
+    current_status = (
+        application.status.value
+        if hasattr(application.status, "value")
+        else str(application.status)
+    ).lower()
 
     # CRITICAL: draft → submitted can ONLY happen via confirm_application()
-    if current_status == "draft" and new_status == "submitted":
+    if current_status == "draft" and new_status_str == "submitted":
         raise ValueError(
             "Cannot change status from 'draft' to 'submitted' via status update. "
             "Use the confirm endpoint to explicitly submit the application."
         )
 
     allowed = ALLOWED_TRANSITIONS.get(current_status, set())
-    if new_status not in allowed:
+    if new_status_str not in allowed:
         raise ValueError(
-            f"Cannot transition from '{current_status}' to '{new_status}'. "
+            f"Cannot transition from '{current_status}' to '{new_status_str}'. "
             f"Allowed transitions from '{current_status}': {allowed or 'none (terminal state)'}"
         )
 
-    application.status = new_status
+    # Set as enum or string matching the model
+    try:
+        application.status = ApplicationStatus(new_status_str)
+    except ValueError:
+        application.status = new_status_str
+
     application.status_updated_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(application)
