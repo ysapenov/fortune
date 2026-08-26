@@ -3,7 +3,7 @@ import logging
 
 import google.genai as genai
 
-from app.config import GEMINI_API_KEY
+from app.config import GEMINI_API_KEY, GEMINI_MODEL
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ class LLMClient:
     def __init__(self):
         if GEMINI_API_KEY:
             self.client = genai.Client(api_key=GEMINI_API_KEY)
-            self.model_name = "gemini-2.5-flash"
+            self.model_name = GEMINI_MODEL
         else:
             logger.warning("GEMINI_API_KEY is not set. LLM features will fail.")
             self.client = None
