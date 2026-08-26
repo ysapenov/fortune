@@ -51,9 +51,15 @@ class JobPosting(Base):
     source = Column(String(255), nullable=True)
 
     # Relationships
-    applications = relationship("Application", back_populates="job_posting")
-    tailored_resumes = relationship("TailoredResume", back_populates="job_posting")
-    interview_preps = relationship("InterviewPrep", back_populates="job_posting")
+    applications = relationship(
+        "Application", back_populates="job_posting", cascade="all, delete-orphan"
+    )
+    tailored_resumes = relationship(
+        "TailoredResume", back_populates="job_posting", cascade="all, delete-orphan"
+    )
+    interview_preps = relationship(
+        "InterviewPrep", back_populates="job_posting", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<JobPosting(id={self.id}, company='{self.company}', title='{self.title}')>"
@@ -72,7 +78,9 @@ class Resume(Base):
     updated_at = Column(DateTime, default=_utcnow, onupdate=_utcnow, nullable=False)
 
     # Relationships
-    tailored_resumes = relationship("TailoredResume", back_populates="resume")
+    tailored_resumes = relationship(
+        "TailoredResume", back_populates="resume", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<Resume(id={self.id}, filename='{self.filename}')>"
@@ -84,8 +92,8 @@ class TailoredResume(Base):
     __tablename__ = "tailored_resumes"
 
     id = Column(Integer, primary_key=True, index=True)
-    resume_id = Column(Integer, ForeignKey("resumes.id"), nullable=False)
-    job_posting_id = Column(Integer, ForeignKey("job_postings.id"), nullable=False)
+    resume_id = Column(Integer, ForeignKey("resumes.id", ondelete="CASCADE"), nullable=False)
+    job_posting_id = Column(Integer, ForeignKey("job_postings.id", ondelete="CASCADE"), nullable=False)
     tailored_data = Column(Text, nullable=True)  # JSON
     file_path = Column(String(2048), nullable=True)
     format = Column(String(10), nullable=True)  # pdf, docx
@@ -106,9 +114,9 @@ class Application(Base):
     __tablename__ = "applications"
 
     id = Column(Integer, primary_key=True, index=True)
-    job_posting_id = Column(Integer, ForeignKey("job_postings.id"), nullable=False)
+    job_posting_id = Column(Integer, ForeignKey("job_postings.id", ondelete="CASCADE"), nullable=False)
     tailored_resume_id = Column(
-        Integer, ForeignKey("tailored_resumes.id"), nullable=True
+        Integer, ForeignKey("tailored_resumes.id", ondelete="SET NULL"), nullable=True
     )
     status = Column(
         Enum(ApplicationStatus),
@@ -137,7 +145,7 @@ class InterviewPrep(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     job_posting_id = Column(
-        Integer, ForeignKey("job_postings.id"), nullable=True
+        Integer, ForeignKey("job_postings.id", ondelete="CASCADE"), nullable=True
     )
     company_name = Column(String(255), nullable=False)
     research_summary = Column(Text, nullable=True)

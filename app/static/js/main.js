@@ -100,7 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     btn.closest('tr').remove();
                 } else {
-                    showAlert('Failed to delete job', 'danger');
+                    const errData = await response.json().catch(() => ({}));
+                    showAlert(errData.detail || 'Failed to delete job', 'danger');
                     btn.disabled = false;
                 }
             } catch (err) {

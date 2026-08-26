@@ -7,6 +7,9 @@ services:
     volumes:
       # Mount data directory so the database persists across restarts
       - ./data:/app/data
+      - ./app:/app/app
+      - ./scripts:/app/scripts
+      - ./tests:/app/tests
     env_file:
       - .env
     restart: unless-stopped

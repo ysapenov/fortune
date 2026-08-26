@@ -170,6 +170,14 @@ def delete_job(job_id: int, db: Session = Depends(get_db)):
     posting = db.query(JobPosting).filter(JobPosting.id == job_id).first()
     if not posting:
         raise HTTPException(status_code=404, detail="Job posting not found")
+    
+    # Remove vectors from ChromaDB if present
+    try:
+        from app.services.vector_store import vector_store
+        vector_store.delete_job_posting(job_id)
+    except Exception:
+        pass
+
     db.delete(posting)
     db.commit()
     return {"message": "Job deleted successfully"}
