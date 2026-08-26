@@ -20,7 +20,7 @@
   {
     "id": "ats_004",
     "category": "keywords",
-    "tip": "Prioritize keywords that appear multiple times or in multiple sections of the job description—they signal higher importance to the employer and the ATS.",
+    "tip": "Prioritize keywords that appear multiple times or in multiple sections of the job descriptionâ€”they signal higher importance to the employer and the ATS.",
     "applies_to": ["all"]
   },
   {
@@ -218,7 +218,7 @@
   {
     "id": "ats_037",
     "category": "common_mistakes",
-    "tip": "Avoid using the same resume for every application. Even small tailoring—updating the summary, reordering skills, and swapping 2-3 bullets—can raise ATS match scores significantly.",
+    "tip": "Avoid using the same resume for every application. Even small tailoringâ€”updating the summary, reordering skills, and swapping 2-3 bulletsâ€”can raise ATS match scores significantly.",
     "applies_to": ["all"]
   },
   {
@@ -269,4 +269,4 @@
     "tip": "Keep resume to one page for fewer than 7 years of experience, and two pages maximum for senior roles. ATS systems do not penalize length, but hiring managers skim long resumes and miss key content.",
     "applies_to": ["all"]
   }
-]
+]

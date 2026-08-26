@@ -55,7 +55,7 @@ CHROMA_DB_PATH = os.getenv(
 )
 
 # Gemini embedding model
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
 
 # Chunking settings for resume / job description segmentation
 RAG_CHUNK_SIZE = int(os.getenv("RAG_CHUNK_SIZE", "500"))
